@@ -1,0 +1,11 @@
+compiler:
+  solc:
+    optimizer:
+      enabled: true
+      runs: 4294967295
+    remappings:
+      - 'openzeppelin=OpenZeppelin/openzeppelin-contracts@4.3.2/contracts'
+dependencies:
+  - OpenZeppelin/openzeppelin-contracts@4.3.2
+reports:
+    only_include_project: false
