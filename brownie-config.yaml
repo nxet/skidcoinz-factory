@@ -1,11 +1,20 @@
 compiler:
   solc:
+    # setting a specific version here will result in fails compiling the UniswapV2 deps for the test suite
+    # no issues for the contract, since it only imports interfaces which don't require specific compiler version
+    #version: 0.8.9
     optimizer:
       enabled: true
       runs: 4294967295
     remappings:
       - 'openzeppelin=OpenZeppelin/openzeppelin-contracts@4.3.2/contracts'
+      - 'uniswap/v2-core=Uniswap/v2-core@1.0.1'
+      - 'uniswap/v2-periphery=Uniswap/v2-periphery@1.0.0-beta.0'
 dependencies:
   - OpenZeppelin/openzeppelin-contracts@4.3.2
+  - Uniswap/v2-core@1.0.1
+  - Uniswap/v2-periphery@1.0.0-beta.0
+networks:
+  default: harmony-mainnet-fork
 reports:
     only_include_project: false
