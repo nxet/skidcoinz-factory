@@ -19,8 +19,14 @@ contract SkidCoin is ERC20Burnable {
   /// @notice Total amount of tokens to mint, in decimals
   uint256 public immutable initialMint;
 
+  /// @dev deployer address, used to protect {initialize}
+  address internal immutable _deployer;
+
   /// @notice Liquidity pool token interface
   IUniswapV2Pair public pair;
+
+  /// @notice True if the contract was properly initialized and the LP seeded, meaning all admin functions are locked and no more tokens can be minted. See also {initialize}
+  bool public initialized;
 
   //
   // decimals
@@ -54,11 +60,17 @@ contract SkidCoin is ERC20Burnable {
     // store contract config
     _decimals = decimals_;
     initialMint = initialMint_;
+    _deployer = msg.sender;
   }
 
   /// @notice Mint `initialMint` tokens and use them to seed the WETH liquidity pool, sending all LP tokens to burn address
   /// @param routerAddress_ address address of the deployed UniswapV2Router02 contract to use as router to initialize the liquidity pool
   function initialize(address routerAddress_) public payable {
+    // check contract is uninitialized, update flag
+    require(initialized == false, "Already initialized");
+    initialized = true;
+    // check caller is authorized
+    require(msg.sender == _deployer, "Unauthorized");
     // check user sent some ETH
     require(msg.value > 0, "Must provide ETH to seed LP");
     // initialize router and factory contracts
