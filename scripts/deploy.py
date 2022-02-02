@@ -13,6 +13,7 @@ NAME = 'Le SkidCoin'
 SYMBOL = 'HIT'
 INITIAL_MINT = 1e8 * 10**DECIMALS
 INITIAL_ETH = 1e18
+TO_DEPLOYER = 10 # of 255, or ~3.92%
 ROUTER_ADDRESS = ROUTER_SushiSwap
 
 
@@ -26,6 +27,7 @@ def main(deployerId):
         NAME,
         SYMBOL,
         INITIAL_MINT,
+        TO_DEPLOYER,
         {'from': deployer}
     )
     contract.initialize(

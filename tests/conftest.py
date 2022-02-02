@@ -19,6 +19,7 @@ def Config():
         symbol = 'HIT'
         initialMint = 1e6
         initialETH = 1e18
+        _toDeployer = 1 # of 255
         routerAddress = ROUTER_SushiSwap
     return cfg
 
@@ -30,6 +31,7 @@ def ContractFixture(SkidCoin, Config, deployer):
         Config.name,
         Config.symbol,
         Config.initialMint,
+        Config._toDeployer,
         {'from': deployer,}
     )
     contract.initialize(
