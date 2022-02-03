@@ -29,7 +29,8 @@ contract GenericSkidCoinV2 is ERC20Burnable {
   uint8 public immutable _toDeployer;
 
   /// @notice Tokens transfered to deployer during {initialize}, in decimals
-  uint256 public toDeployer;
+  /// @dev Filled in during {constructor} based on {initialMint}
+  uint256 public immutable toDeployer;
 
   //
   // storage: maxOwnable
@@ -70,7 +71,7 @@ contract GenericSkidCoinV2 is ERC20Burnable {
   // main
   //
 
-  /// @dev Store basic configuration
+  /// @dev Store basic configuration, calc `toDeployer` and `maxOwnable` ratios
   /// @param decimals_ uint256 token decimals, see {decimals}
   /// @param name_ string name of the token, i.e. 'Le SkidCoin'
   /// @param symbol_ string symbol of the token, i.e. 'HIT' for ticker '$HIT'
@@ -92,11 +93,13 @@ contract GenericSkidCoinV2 is ERC20Burnable {
       toDeployer_ <= maxOwnable_,
       "Deployer would receive more than maxOwnable"
     );
-    // store contract config
+    // store base config
     _deployer = msg.sender;
     _decimals = decimals_;
     initialMint = initialMint_;
+    // store toDeployer ratio and calc token decimals
     _toDeployer = toDeployer_;
+    toDeployer = initialMint * toDeployer_ / 255;
     // store maxOwnable ratio and calc token decimals
     _maxOwnable = maxOwnable_;
     maxOwnable = initialMint * maxOwnable_ / 255;
@@ -113,11 +116,11 @@ contract GenericSkidCoinV2 is ERC20Burnable {
     // check user sent some ETH
     require(msg.value > 0, "Must provide ETH to seed LP");
 
-    // calc and store tokens due to deployer, mint them
-    toDeployer = initialMint * _toDeployer / 255;
+    // mint to deployer
     _mint(_deployer, toDeployer);
-    // calc remaining amount of tokens to be minted sent to LP, mint them
+    // calc remaining amount of tokens to be minted and sent to LP
     uint256 toLP_ = initialMint - toDeployer;
+    // mint them to ourself (contract)
     _mint(address(this), toLP_);
 
     // initialize router and factory
