@@ -29,7 +29,7 @@ pip install eth-brownie
 git clone https://github.com/nxet/skidcoinz-factory
 cd skidcoinz-factory
 # [optional, downloaded on first compile] install dependencies
-brownie pm install OpenZeppelin/openzeppelin-contracts@4.3.2
+brownie pm install OpenZeppelin/openzeppelin-contracts@4.4.2
 brownie pm install Uniswap/v2-core@1.0.1
 brownie pm install Uniswap/v2-periphery@1.0.0-beta.0
 # [optional, ymmv based on which router you're going to use]

@@ -7,11 +7,11 @@ compiler:
       enabled: true
       runs: 4294967295
     remappings:
-      - 'openzeppelin=OpenZeppelin/openzeppelin-contracts@4.3.2/contracts'
-      - 'uniswap/v2-core=Uniswap/v2-core@1.0.1'
-      - 'uniswap/v2-periphery=Uniswap/v2-periphery@1.0.0-beta.0'
+      - '@openzeppelin/contracts=OpenZeppelin/openzeppelin-contracts@4.4.2/contracts'
+      - '@uniswap/v2-core=Uniswap/v2-core@1.0.1'
+      - '@uniswap/v2-periphery=Uniswap/v2-periphery@1.0.0-beta.0'
 dependencies:
-  - OpenZeppelin/openzeppelin-contracts@4.3.2
+  - OpenZeppelin/openzeppelin-contracts@4.4.2
   - Uniswap/v2-core@1.0.1
   - Uniswap/v2-periphery@1.0.0-beta.0
 networks:
