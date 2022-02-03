@@ -1,5 +1,6 @@
 from brownie import accounts
 from brownie import SkidCoin1
+from brownie import SkidCoin2
 
 # deployed UniswapV2Router02 contracts
 #   Harmony Mainnet Shard #0
@@ -11,6 +12,7 @@ ROUTERS = {
 # available contracts
 CONTRACTS = {
     'SkidCoin1': SkidCoin1,
+    'SkidCoin2': SkidCoin2,
 }
 
 
@@ -19,7 +21,7 @@ def main(contractName, routerName, initialETH, deployerId):
     run with:
         `brownie run deploy main ContractName routerName initETHwei deployerId`
     like:
-        `brownie run deploy main SkidCoin1 harmony-sushiswap 1000000000000000000 myDeployerAccount`
+        `brownie run deploy main SkidCoin2 harmony-sushiswap 1000000000000000000 myDeployerAccount`
 
     `routerName` can be one of those declared in the script, or a 0x1234 address
     for more info about `deployerId`, see `brownie accounts --help`

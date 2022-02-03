@@ -35,6 +35,22 @@ def ContractFixtureV1(GenericSkidCoinV1, deployer):
 
 
 #
+# v2
+#
+
+from v2.conftest import Config as _ConfigV2
+from v2.conftest import deploy_fixture as deploy_fixture_v2
+
+@pytest.fixture(scope='module')
+def ConfigV2():
+    return _ConfigV2
+
+@pytest.fixture(scope='module')
+def ContractFixtureV2(GenericSkidCoinV2, deployer):
+    return deploy_fixture_v2(GenericSkidCoinV2, deployer)
+
+
+#
 # apply fn_isolation to all future tests
 #
 
