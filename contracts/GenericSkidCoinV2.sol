@@ -19,6 +19,14 @@ contract GenericSkidCoinV2 is ERC20Burnable {
   /// @notice Total amount of tokens to mint, in decimals
   uint256 public immutable initialMint;
 
+  /// @notice Amount of ETH provided at deploy (in wei), used to seed the liquidity pool
+  /// @dev Can't be immutable since it's set after {constructor}, irrelevant since this is purely cosmetic
+  uint256 public initialETH;
+
+  /// @notice Price at deploy (initialETH / initialMint), in wei per token
+  /// @dev Can't be immutable since it's set after {constructor}, irrelevant since this is purely cosmetic
+  uint256 public initialPrice;
+
   /// @dev Deployer address, used to protect {initialize}
   /// If _toDeployer > 0, this is also used to send the initial mint.
   address internal immutable _deployer;
@@ -31,6 +39,10 @@ contract GenericSkidCoinV2 is ERC20Burnable {
   /// @notice Tokens transfered to deployer during {initialize}, in decimals
   /// @dev Filled in during {constructor} based on {initialMint}
   uint256 public immutable toDeployer;
+
+  /// @notice Tokens transfered to liquidity pool during {initialize}, in decimals
+  /// @dev Filled in during {constructor} based on {initialMint}
+  uint256 public immutable toLP;
 
   //
   // storage: maxOwnable
@@ -100,28 +112,30 @@ contract GenericSkidCoinV2 is ERC20Burnable {
     // store toDeployer ratio and calc token decimals
     _toDeployer = toDeployer_;
     toDeployer = initialMint * toDeployer_ / 255;
+    // calc remaining amount of tokens to be minted and sent to LP
+    toLP = initialMint_ - toDeployer;
     // store maxOwnable ratio and calc token decimals
     _maxOwnable = maxOwnable_;
     maxOwnable = initialMint * maxOwnable_ / 255;
   }
 
   /// @notice Mint `initialMint` tokens and use them to seed the WETH liquidity pool, sending all LP tokens to burn address
+  /// @dev
+  ///     - check if call is authorized
+  ///     - mint {initialMint} to contract (and deployer, if {toDeployer} > 0)
+  ///     - initialize UniswapV2 router and factory, create WETH pair
+  ///     - allow router to spend contract's tokens
+  ///     - provide {toLP} tokens to liquidity pool, lock liquidity sending the LP tokens to burn address
+  ///     - remove allowance, store initialization parameters
+  ///     - lock contract
   /// @param routerAddress_ address address of the deployed UniswapV2Router02 contract to use as router to initialize the liquidity pool
   function initialize(address routerAddress_) public payable {
-    // check contract is uninitialized, update flag
+    // check contract is uninitialized
     require(initialized == false, "Already initialized");
-    initialized = true;
     // check caller is authorized
     require(msg.sender == _deployer, "Unauthorized");
     // check user sent some ETH
     require(msg.value > 0, "Must provide ETH to seed LP");
-
-    // mint to deployer
-    _mint(_deployer, toDeployer);
-    // calc remaining amount of tokens to be minted and sent to LP
-    uint256 toLP_ = initialMint - toDeployer;
-    // mint them to ourself (contract)
-    _mint(address(this), toLP_);
 
     // initialize router and factory
     // NOTE: not using Router02 because `brownie pm` has trouble installing, and I don't want any manual steps required to set up future development environments
@@ -133,20 +147,35 @@ contract GenericSkidCoinV2 is ERC20Burnable {
       factory_.createPair(address(this), router_.WETH()) // returns pair address
     );
 
+    // check if part of the inital mint should be sent to deployer
+    if (_toDeployer > 0) {
+      // mint to deployer, amount already calc in {constructor}
+      _mint(_deployer, toDeployer);
+    }
+
+    // mint the rest of supply to contract, again amount calc in {constructor}
+    _mint(address(this), toLP);
     // allow router to spend tokens stored in contract
-    this.approve(routerAddress_, toLP_);
+    this.approve(routerAddress_, toLP);
     // add liquidity to pool
     // returns (uint amountTokenFinal, uint amountWETHFinal, uint liquidity)
     router_.addLiquidityETH{value: msg.value}(
       address(this), // token address
-      toLP_, // seed with toLP_ tokens
-      toLP_, // and minimum toLP_ tokens
+      toLP, // seed with toLP tokens
+      toLP, // and minimum toLP tokens
       msg.value, // and minimum msg.value WETH
       address(0), // LP tokens recipient - this is what burns/locks liquidity
       block.timestamp + 15 minutes // deadline
     );
     // remove allowance, just in case
     this.approve(routerAddress_, 0);
+
+    // store initial ETH and price per token (both in wei)
+    initialETH = msg.value;
+    initialPrice = msg.value * (10 ** decimals()) / toLP;
+
+    // update init flag (locking contract)
+    initialized = true;
 
   }
 
