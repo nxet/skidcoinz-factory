@@ -7,10 +7,10 @@ import "uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
 import "uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router01.sol";
 
 
-/// @title SkidCoin
+/// @title Generic SkidCoin v1
 /// @custom:url https://github.com/nxet/skidcoinz-factory
 /// @notice If the name wasn't clear enough, this token was developed and deployed to the blockchain exclusively for testing purposes.
-contract SkidCoin is ERC20Burnable {
+contract GenericSkidCoinV1 is ERC20Burnable {
 
   //
   // config
@@ -100,7 +100,7 @@ contract SkidCoin is ERC20Burnable {
 
     // [optional]
     // The following section can be removed, since {router_-addLiquidityETH} is enough to create and seed the LP.
-    // These extra steps are performed exclusively to store a reference to the `pair` created.
+    // These extra steps are performed exclusively to store a reference to the pair created (NB: which is used in the v1 tests).
     // Omitting this (and relative storage declarations) saves about 150k gas for {constructor} and another 5k for {initialize}
     // initialize factory
     IUniswapV2Factory factory_ = IUniswapV2Factory(router_.factory());

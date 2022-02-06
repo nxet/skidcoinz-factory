@@ -3,6 +3,17 @@
 Having some fun with the ERC20 standard.
 LFG 🚀🚀🚀
 
+### GenericSkidCoinV1
+The bare-minimum, to test autodeploy of the WETH liquidity pool.  
+Might work fine if you have a lot of liquidity to bootstrap the pool, **avoid** otherwise.  
+> The first time this contract was deployed (on Harmony, with 1.00 $ONE initial liquidity), it took 45 minutes to see the pool completely destroyed, thanks to someone buying 83% of the supply (for 20 $ONE).  
+> On the bright side I made some of the gas back and learned my lesson. It was weird to see this sink so fast though, since the only thing the whale achieved was losing most of their money.
+
+### GenericSkidCoinV2
+After the fail with V1 it became clear that some kind of limit had to be put in place. And that people will gladly throw cash at random coins, most likely without the understanding of why their move is killing it.  
+This version includes a `maxOwnable` configuration parameter, which allows to cap the amount of tokens ownable by a single account.  
+And fixes that very specific problem. There would be a lot more checks to make sure people "behave", but I think it's worth giving a shot to this simpler contract and see how it performs. Next iteration might implement some mechanism to force users to provide LP before being able to buy more tokens.
+
 ---
 
 ### dev - getting started
