@@ -1,39 +1,44 @@
 from brownie import accounts
-from brownie import SkidCoin
+from brownie import SkidCoin1
+
+# deployed UniswapV2Router02 contracts
+#   Harmony Mainnet Shard #0
+ROUTERS = {
+ 'harmony-viperswap': '0xf012702a5f0e54015362cBCA26a26fc90AA832a3',
+ 'harmony-sushiswap': '0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506',
+}
+
+# available contracts
+CONTRACTS = {
+    'SkidCoin1': SkidCoin1,
+}
 
 
-# routers
-# NB: these routers are tested on Harmony Mainnet only so far
-ROUTER_ViperSwap = '0xf012702a5f0e54015362cBCA26a26fc90AA832a3'
-ROUTER_SushiSwap = '0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506'
-
-# config
-DECIMALS = 9
-NAME = 'Le SkidCoin'
-SYMBOL = 'HIT'
-INITIAL_MINT = 1e8 * 10**DECIMALS
-INITIAL_ETH = 1e18
-TO_DEPLOYER = 10 # of 255, or ~3.92%
-ROUTER_ADDRESS = ROUTER_SushiSwap
-
-
-def main(deployerId):
+def main(contractName, routerName, initialETH, deployerId):
     '''
+    run with:
+        `brownie run deploy main ContractName routerName initETHwei deployerId`
+    like:
+        `brownie run deploy main SkidCoin1 harmony-sushiswap 1000000000000000000 myDeployerAccount`
+
+    `routerName` can be one of those declared in the script, or a 0x1234 address
     for more info about `deployerId`, see `brownie accounts --help`
     '''
+    initialETH = int(initialETH)
+    Contract = CONTRACTS[contractName]
+    try:
+        routerAddress = ROUTERS[routerName]
+    except KeyError:
+        routerAddress = routerName
     deployer = accounts.load(deployerId)
-    contract = SkidCoin.deploy(
-        DECIMALS,
-        NAME,
-        SYMBOL,
-        INITIAL_MINT,
-        TO_DEPLOYER,
-        {'from': deployer}
-    )
+    # assert that deployer has enough funds to deploy and seed LP
+    #   TODO unable to estimate gas on undeployed contract methods
+    #   aggressively checking for a whole ETH for deploy (depending on gas price, far less should be required)
+    assert deployer.balance() > (1e18 + initialETH), \
+        'Deployer doesn\'t have enough funds'
+    # deploy contract
+    contract = Contract.deploy({'from': deployer})
     contract.initialize(
-        ROUTER_ADDRESS,
-        {
-            'from': deployer,
-            'value': INITIAL_ETH,
-        }
+        routerAddress,
+        {'from': deployer, 'value': initialETH}
     )
