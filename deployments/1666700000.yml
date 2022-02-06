@@ -1,0 +1,16 @@
+# harmony-testnet-shard0
+
+- 0xCee7a5130eF55c71F154A7FD6F06A7142Ffb6856:
+  contract: SkidCoin0
+  deployer: '0x8Fb5d411F03167B7c850FB850d345b3f36c752BD'
+  atBlock: 20949414
+  txn: '0x2c94cbb3ec07e3d9eedee638e75579f8539ac1f75e906594b3158066ca2b1bd5'
+  constructor_args:
+    decimals_: 9
+    name_: Le SkidCoin
+    symbol_: HIT
+    initialMint_: 10**6 * 10**9 # 1,000,000 * decimals
+    toDeployer_: 1 # of 255, or ~0.39%
+  initialize_args:
+    initialETH: 1e18 # 1ETH
+    routerAddress_: '0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506' # SushiSwap
