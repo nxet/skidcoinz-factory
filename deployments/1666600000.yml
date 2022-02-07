@@ -14,3 +14,19 @@
   initialize_args:
     initialETH: 1e18 # 1ETH
     routerAddress_: '0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506' # SushiSwap
+
+- 0xB8219785DF746F772Bf45eF13484A254DF16cB3b:
+  contract: SkidCoin2
+  deployer: '0x8Fb5d411F03167B7c850FB850d345b3f36c752BD'
+  atBlock: 22693247
+  txn: '0x578218fd35241ad04ad40dd5c2d374345c0a900826d5bba318345678ea59d728'
+  constructor_args:
+    decimals_: 9
+    name_: Le SkidCoin
+    symbol_: HIT
+    initialMint_: 10**6 * 10**9 # 1,000,000 * decimals
+    toDeployer_: 1 # of 255, or ~0.39%
+    maxOwnable_: 4 # of 255, or ~1.56%
+  initialize_args:
+    initialETH: 1e18 # 1ETH
+    routerAddress_: '0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506' # SushiSwap
